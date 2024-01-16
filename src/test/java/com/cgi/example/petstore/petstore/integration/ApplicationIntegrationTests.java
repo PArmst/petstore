@@ -88,6 +88,7 @@ public class ApplicationIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
+
 }
 
 

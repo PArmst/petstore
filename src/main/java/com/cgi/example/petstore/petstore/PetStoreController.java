@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PetStoreController implements PetStoreApi {
-    @Override
+
     public ResponseEntity<Pet> getPetById(Long petId) {
 
-        //validation to ensure that anything out of the 1-2000 range returns a Bad Request status code.
+
         if (petId == null || petId <1 || petId >2000){
             return (ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         }
-
 
         Pet newPet = new Pet();
         newPet.setId(petId);
