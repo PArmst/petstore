@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"management.server.port=0"})
 @ExtendWith(SpringExtension.class)
-public class ApplicationIntegrationTests {
+public class PetStoreControllerIntegrationTests {
 
     @Autowired
     private Environment environment;
@@ -86,6 +86,10 @@ public class ApplicationIntegrationTests {
 
         // assert status code
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+        if (responseEntity.getBody() != null){
+            System.out.println("Response Body: "+responseEntity.getBody());
+        }
     }
 
 
@@ -133,3 +137,4 @@ public class ApplicationIntegrationTests {
     }
 }
 */
+
