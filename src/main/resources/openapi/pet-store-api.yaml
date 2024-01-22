@@ -52,12 +52,44 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Pet not found
+  /pet-store/pets/findByStatus:
+    get:
+      tags:
+        - pet
+      summary: Finds Pets by status
+      description: Returns a list of pets by status
+      operationId: findPetsByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status of pets to return
+          required: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - "Available for Purchase"
+              - "Pending Collection"
+              - "Sold"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid status value
 components:
   schemas:
     Pet:
       required:
         - name
         - photoUrls
+        - petType
+        - petStatus
       type: object
       properties:
         id:
@@ -72,3 +104,11 @@ components:
           items:
             type: string
             example: https://www.freepik.com/free-photo/isolated-happy-smiling-dog-white-background-portrait-4_39994000.htm#uuid=4f38a524-aa89-430d-8041-1de9ffb631c6
+        petType:
+          type: string
+          enum: ["Dog", "Cat", "Guinea Pig", "Fish"]
+          example: Dog
+        petStatus:
+          type: string
+          enum: ["Available for Purchase", "Pending Collection", "Sold"]
+          example: Available for Purchase
