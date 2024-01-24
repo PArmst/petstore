@@ -1,15 +1,20 @@
 package com.cgi.example.petstore.petstore.integration;
 
 import com.cgi.example.petstore.model.Pet;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,6 +28,7 @@ public class PetStoreControllerIntegrationTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
 
     private String getBaseUrl() {
         // append the port number to the base url
@@ -57,13 +63,13 @@ public class PetStoreControllerIntegrationTests {
     }
 
     @Test
-    public void testValidPetID(){
+    public void testValidPetID() {
         // assign a valid petID
         Long validID = 1584L;
 
         // Send a request
         ResponseEntity<Pet> responseEntity = testRestTemplate.getForEntity(
-                getBaseUrl()+"/api/v1/pet-store/pets/{petId}",
+                getBaseUrl() + "/api/v1/pet-store/pets/{petId}",
                 Pet.class,
                 validID
         );
@@ -73,13 +79,13 @@ public class PetStoreControllerIntegrationTests {
     }
 
     @Test
-    public void testInvalidPetID(){
+    public void testInvalidPetID() {
         // assign a valid petID
         Long invalidID = 3229L;
 
         // Send a request
         ResponseEntity<Pet> responseEntity = testRestTemplate.getForEntity(
-                getBaseUrl()+"/api/v1/pet-store/pets/{petId}",
+                getBaseUrl() + "/api/v1/pet-store/pets/{petId}",
                 Pet.class,
                 invalidID
         );
@@ -87,11 +93,50 @@ public class PetStoreControllerIntegrationTests {
         // assert status code
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 
-        if (responseEntity.getBody() != null){
-            System.out.println("Response Body: "+responseEntity.getBody());
+        if (responseEntity.getBody() != null) {
+            System.out.println("Response Body: " + responseEntity.getBody());
         }
     }
 
+    @Test
+    public void testFindPetByStatus() throws Exception {
+        //defining expected data
+        List<Pet> expectedPets = List.of(
+                createDummyPet(1L, "Kitty", "CAT", "SOLD"),
+                createDummyPet(2L, "Doggie", "DOG", "PENDING_COLLECTION"),
+                createDummyPet(3L, "Piggie", "GUINEA_PIG", "AVAILABLE_FOR_PURCHASE")
+        );
+
+        //filter for the number of "SOLD" pets
+        long expectedSoldCount = expectedPets.stream().filter(pet -> Pet.PetStatusEnum.SOLD.equals(pet.getPetStatus())).count();
+
+        String url = getBaseUrl() + "/api/v1/pet-store/pets/findByStatus?status=SOLD";
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(url, HttpMethod.GET, null, String.class);
+
+        // Assert status code
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        // Print the received JSON for debugging
+        System.out.println("Received JSON: " + responseEntity.getBody());
+
+        // Convert the received JSON to an ArrayNode for further inspection
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode arrayNode = objectMapper.readValue(responseEntity.getBody(), ArrayNode.class);
+
+        // Assert response body
+        assertNotNull(arrayNode);
+        assertEquals(expectedSoldCount, arrayNode.size());
+    }
+
+    private Pet createDummyPet(Long id, String name, String petType, String petStatus) {
+        Pet pet = new Pet();
+        pet.setId(id);
+        pet.setName(name);
+        pet.setPetType(Pet.PetTypeEnum.valueOf(petType));
+        pet.setPetStatus(Pet.PetStatusEnum.valueOf(petStatus));
+
+        return pet;
+    }
 
 }
 

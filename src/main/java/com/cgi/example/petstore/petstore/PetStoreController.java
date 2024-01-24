@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class PetStoreController implements PetStoreApi {
 
 
     @Override
-    public ResponseEntity<List<Pet>> findPetsByStatus(@RequestParam(name="status") String status) {
+    public ResponseEntity<List<Pet>> findPetsByStatus(@RequestParam(name = "status") String status) {
         // Creating a dummy list of pets
         List<Pet> allPets = List.of(
                 createDummyPet(1L, "Kitty", "CAT", "SOLD"),
@@ -33,11 +32,12 @@ public class PetStoreController implements PetStoreApi {
 
         Pet newPet = new Pet();
         newPet.setId(petId);
-        newPet.setName("Static Name");
+        newPet.setName("Kitty");
+        newPet.setPetStatus(Pet.PetStatusEnum.SOLD);
+        newPet.setPetType(Pet.PetTypeEnum.CAT);
 
         return ResponseEntity.ok(newPet);
     }
-
 
 
     private Pet createDummyPet(Long id, String name, String petType, String petStatus) {
