@@ -59,7 +59,7 @@ public class PetStoreControllerIntegrationTests {
         // assert the petID is correct in the response
         assertEquals(petId, responseEntity.getBody().getId());
         // assert the correct pet name is being returned
-        assertEquals("Static Name", responseEntity.getBody().getName());
+        assertEquals("Kitty", responseEntity.getBody().getName());
     }
 
     @Test

@@ -20,7 +20,7 @@ class PetStoreControllerTest {
     @BeforeEach
     void setUp() {
         // Initialize mocks
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
